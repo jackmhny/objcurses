@@ -4,25 +4,12 @@
 
 #pragma once
 
+#include "../utils/mathematics.h"
+
 #include <string>
 #include <vector>
 #include <array>
 #include <optional>
-
-// vector3 structure
-struct Vec3 {
-    float x = 0.0f;
-    float y = 0.0f;
-    float z = 0.0f;
-
-    Vec3() = default;
-    Vec3(float x, float y, float z) : x(x), y(y), z(z) {}
-
-    Vec3 operator+(const Vec3& other) const noexcept { return {x + other.x, y + other.y, z + other.z}; }
-    Vec3 operator-(const Vec3& other) const noexcept { return {x - other.x, y - other.y, z - other.z}; }
-    Vec3 operator*(float scalar) const noexcept { return {x * scalar, y * scalar, z * scalar}; }
-};
-
 
 // triangular face
 class Face {
