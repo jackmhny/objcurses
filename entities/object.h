@@ -24,7 +24,7 @@ public:
 class Material {
 public:
     std::string material_name;
-    Vec3 diffuse; // diffuse color red, green, blue components
+    Vec3 diffuse;               // diffuse color (Kd) - red, green, blue components
 
     explicit Material(const std::string& name = "", const Vec3& color = {1.0f, 1.0f, 1.0f}): material_name(name), diffuse(color) {}
 };
