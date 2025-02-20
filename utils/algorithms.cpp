@@ -4,7 +4,7 @@
 
 #include "algorithms.h"
 
-bool is_in_triangle(const Vec3& pt, const Vec3& v1, const Vec3& v2, const Vec3& v3)
+bool is_in_triangle(const Vec3 &pt, const Vec3 &v1, const Vec3 &v2, const Vec3 &v3)
 {
     Vec3 cross1 = Vec3::cross(v2 - v1, pt - v1);
     Vec3 cross2 = Vec3::cross(v3 - v2, pt - v2);
@@ -14,22 +14,22 @@ bool is_in_triangle(const Vec3& pt, const Vec3& v1, const Vec3& v2, const Vec3& 
     return same_sign;
 }
 
-bool is_ear(size_t i, const std::vector<Vec3>& points, const std::vector<size_t>& indices)
+bool is_ear(size_t i, const std::vector<Vec3> &points, const std::vector<size_t> &indices)
 {
     size_t prev = indices[(i + indices.size() - 1) % indices.size()];
     size_t curr = indices[i];
     size_t next = indices[(i + 1) % indices.size()];
 
-    const Vec3& v1 = points[prev];
-    const Vec3& v2 = points[curr];
-    const Vec3& v3 = points[next];
+    const Vec3 &v1 = points[prev];
+    const Vec3 &v2 = points[curr];
+    const Vec3 &v3 = points[next];
 
     // check if angle is convex
     Vec3 d1 = v2 - v1;
     Vec3 d2 = v3 - v2;
     if (Vec3::cross(d1, d2).z <= 0)
     {
-        return false;   // not convex
+        return false; // not convex
     }
 
     // check for no other points inside triangle
@@ -42,19 +42,19 @@ bool is_ear(size_t i, const std::vector<Vec3>& points, const std::vector<size_t>
 
         if (is_in_triangle(points[indices[j]], v1, v2, v3))
         {
-            return false;   // point inside triangle
+            return false; // point inside triangle
         }
     }
 
-    return true;    // ear found
+    return true; // ear found
 }
 
-std::optional<std::vector<size_t>> triangularize(const std::vector<Vec3>& points)
+std::optional<std::vector<size_t>> triangularize(const std::vector<Vec3> &points)
 {
     size_t n = points.size();
     if (n < 3)
     {
-        return std::nullopt;    // insufficient points
+        return std::nullopt; // insufficient points
     }
 
     // list of vertex indexes
@@ -90,7 +90,7 @@ std::optional<std::vector<size_t>> triangularize(const std::vector<Vec3>& points
 
         if (!ear_found)
         {
-            return std::nullopt;    // no valid ear
+            return std::nullopt; // no valid ear
         }
     }
 

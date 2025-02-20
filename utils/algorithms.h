@@ -2,10 +2,10 @@
  * algorithms.h
  */
 
-#include "../utils/mathematics.h"
-
-#include <vector>
-#include <optional>
 #include <numeric>
+#include <optional>
+#include <vector>
 
-std::optional<std::vector<size_t>> triangularize(const std::vector<Vec3>& points);
+#include "mathematics.h"
+
+std::optional<std::vector<size_t>> triangularize(const std::vector<Vec3> &points);

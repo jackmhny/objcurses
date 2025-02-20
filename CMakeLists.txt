@@ -11,6 +11,7 @@ list(FILTER SOURCES EXCLUDE REGEX "${CMAKE_BINARY_DIR}")
 
 # creating executable
 add_executable(${PROJECT_NAME} ${SOURCES})
+target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR})
 
 # linking ncurses library
 find_package(Curses REQUIRED)
