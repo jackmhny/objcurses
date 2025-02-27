@@ -4,21 +4,17 @@
 
 #include "buffer.h"
 
-// projection methods
+#include <array>
 
-Projection Projection::sort_by_x() const
+// Projection methods
+
+Projection Projection::sort_x() const
 {
-    Projection out( *this );
+    std::array arr = {p1, p2, p3};
 
-    Vec3 arr[3] = {out.p1, out.p2, out.p3};
+    std::ranges::sort(arr, [](const Vec3 &a, const Vec3 &b) { return a.x < b.x; });
 
-    std::sort(arr, arr+3, [](const Vec3 &a, const Vec3 &b){return a.x < b.x;});
-
-    out.p1 = arr[0];
-    out.p2 = arr[1];
-    out.p3 = arr[2];
-
-    return out;
+    return {arr[0], arr[1], arr[2], color};
 }
 
 float Projection::limit_y1(const float x) const
@@ -68,18 +64,18 @@ Vec3 Projection::normal() const
 {
     const Vec3 v1 = p2 - p1;
     const Vec3 v2 = p3 - p1;
-    const Vec3 n  = Vec3::cross(v1, v2);
+    const Vec3 n = Vec3::cross(v1, v2);
 
     return n.normalize();
 }
 
-// buffer methods
+// Buffer methods
 
 Buffer::Buffer(const unsigned int x, const unsigned int y, const float logical_x, const float logical_y) : x(x), y(y), logical_x(logical_x), logical_y(logical_y)
 {
     if (x == 0 || y == 0)
     {
-        throw std::runtime_error("buffer size must be non-zero");
+        throw std::runtime_error("zero buffer size");
     }
 
     dx = logical_x / static_cast<float>(x);
@@ -94,47 +90,47 @@ void Buffer::clear()
 {
     for (auto &p : pixels)
     {
-        p.z = INFINITY;
+        p.z = std::numeric_limits<float>::max();
         p.c = ' ';
         p.material = std::nullopt;
     }
 }
 
-int Buffer::index_x(const float realX) const
+int Buffer::index_x(const float real_x) const
 {
-    int ix = static_cast<int>(realX / dx);
-    ix = clamp(ix, 0, static_cast<int>(x) - 1);
+    int index = static_cast<int>(real_x / dx);
+    index = clamp(index, 0, static_cast<int>(x) - 1);
 
-    return ix;
+    return index;
 }
 
-int Buffer::index_y(const float realY) const
+int Buffer::index_y(const float real_y) const
 {
-    int iy = static_cast<int>(realY / dy);
+    int iy = static_cast<int>(real_y / dy);
     iy = clamp(iy, 0, static_cast<int>(y) - 1);
 
     return iy;
 }
 
-float Buffer::depth_at(const Projection &proj, const Vec3 &normal, int xx, int yy) const
+float Buffer::depth(const Projection &projection, const Vec3 &normal, const int pixel_x, const int pixel_y) const
 {
-    const float c_x = (static_cast<float>(xx) + 0.5f) * dx;
-    const float c_y = (static_cast<float>(yy) + 0.5f) * dy;
+    const float center_x = (static_cast<float>(pixel_x) + 0.5f) * dx;
+    const float center_y = (static_cast<float>(pixel_y) + 0.5f) * dy;
 
     if (std::fabs(normal.z) < 1e-7f)
     {
-        return proj.p1.z;
+        return projection.p1.z;
     }
 
-    const float d_z = normal.x * (c_x - proj.p1.x) + normal.y * (c_y - proj.p1.y);
-    const float z  = proj.p1.z - d_z / normal.z;
+    const float d_z = normal.x * (center_x - projection.p1.x) + normal.y * (center_y - projection.p1.y);
+    const float z  = projection.p1.z - d_z / normal.z;
 
     return z;
 }
 
-void Buffer::draw_projection(const Projection &proj, const char c, int material)
+void Buffer::draw_projection(const Projection &projection, const char c, int material)
 {
-    const Projection triangle = proj.sort_by_x();
+    const Projection triangle = projection.sort_x();
 
     const float x_i = triangle.p1.x + dx * 0.5f;
     const float x_f = triangle.p3.x - dx * 0.5f;
@@ -146,9 +142,9 @@ void Buffer::draw_projection(const Projection &proj, const char c, int material)
 
     const Vec3 normal = triangle.normal();
 
-    for (int xx = x_start; xx <= x_end; xx++)
+    for (int pixel_x = x_start; pixel_x <= x_end; pixel_x++)
     {
-        const float rx = (static_cast<float>(xx) + 0.5f) * dx;
+        const float rx = (static_cast<float>(pixel_x) + 0.5f) * dx;
 
         float y1 = triangle.limit_y1(rx);
         float y2 = triangle.limit_y2(rx);
@@ -165,11 +161,11 @@ void Buffer::draw_projection(const Projection &proj, const char c, int material)
         const int y_start = index_y(y_start_val);
         const int y_end = index_y(y_end_val);
 
-        for (int yy = y_start; yy <= y_end; yy++)
+        for (int pixel_y = y_start; pixel_y <= y_end; pixel_y++)
         {
-            Pixel &pixel = pixels[yy * x + xx];
+            Pixel &pixel = pixels[pixel_y * x + pixel_x];
 
-            if (const float z = depth_at(triangle, normal, xx, yy); z < pixel.z)
+            if (const float z = depth(triangle, normal, pixel_x, pixel_y); z < pixel.z)
             {
                 pixel.z = z;
                 pixel.c = c;

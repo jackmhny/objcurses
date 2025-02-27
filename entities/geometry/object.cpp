@@ -7,7 +7,7 @@
 // helper functions
 
 // from obj index to vector index
-static int relative_index(int idx, int total_vertices)
+static int relative_index(const int idx, int total_vertices)
 {
     if (idx == 0 || std::abs(idx) > total_vertices)
     {
@@ -22,7 +22,7 @@ static int relative_index(int idx, int total_vertices)
 // clean string
 static void strip_line(std::string &line)
 {
-    std::erase_if(line, [](char c) { return c == '\r' || c == '\n'; });
+    std::erase_if(line, [](const char c) { return c == '\r' || c == '\n'; });
     std::ranges::replace(line, '\t', ' ');
 }
 
