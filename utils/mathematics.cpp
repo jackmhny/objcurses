@@ -4,7 +4,7 @@
 
 #include "mathematics.h"
 
-Vec3::Vec3(float x, float y, float z) : x(x), y(y), z(z) {}
+Vec3::Vec3(const float x, const float y, const float z) : x(x), y(y), z(z) {}
 
 Vec3 Vec3::operator+(const Vec3 &other) const
 {
@@ -16,7 +16,7 @@ Vec3 Vec3::operator-(const Vec3 &other) const
     return { x - other.x, y - other.y, z - other.z };
 }
 
-Vec3 Vec3::operator*(float scalar) const
+Vec3 Vec3::operator*(const float scalar) const
 {
     return { x * scalar, y * scalar, z * scalar };
 }
@@ -37,7 +37,7 @@ Vec3 &Vec3::operator-=(const Vec3 &other)
     return *this;
 }
 
-Vec3 &Vec3::operator*=(float scalar)
+Vec3 &Vec3::operator*=(const float scalar)
 {
     x *= scalar;
     y *= scalar;
@@ -57,7 +57,7 @@ float Vec3::magnitude() const
 
 Vec3 Vec3::normalize() const
 {
-    float mag = magnitude();
+    const float mag = magnitude();
     return (mag > 0) ? (*this * (1.0f / mag)) : Vec3(0.0f, 0.0f, 0.0f);
 }
 
@@ -77,15 +77,15 @@ Vec3 Vec3::cross(const Vec3 &a, const Vec3 &b)
 
 float Vec3::cosine_similarity(const Vec3 &a, const Vec3 &b)
 {
-    float a_mag = a.magnitude();
-    float b_mag = b.magnitude();
+    const float a_mag = a.magnitude();
+    const float b_mag = b.magnitude();
     return (a_mag > 0 && b_mag > 0) ? Vec3::dot(a, b) / (a_mag * b_mag) : 0.0f;
 }
 
-Vec3 Vec3::rotate_y(const Vec3 &v, float radians)
+Vec3 Vec3::rotate_y(const Vec3 &v, const float radians)
 {
-    float cos_theta = std::cos(radians);
-    float sin_theta = std::sin(radians);
+    const float cos_theta = std::cos(radians);
+    const float sin_theta = std::sin(radians);
     return {
         v.x * cos_theta - v.z * sin_theta,
         v.y,
@@ -93,10 +93,10 @@ Vec3 Vec3::rotate_y(const Vec3 &v, float radians)
     };
 }
 
-Vec3 Vec3::rotate_x(const Vec3 &v, float radians)
+Vec3 Vec3::rotate_x(const Vec3 &v, const float radians)
 {
-    float cos_theta = std::cos(radians);
-    float sin_theta = std::sin(radians);
+    const float cos_theta = std::cos(radians);
+    const float sin_theta = std::sin(radians);
     return {
         v.x,
         v.y * cos_theta - v.z * sin_theta,

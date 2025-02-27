@@ -8,4 +8,15 @@
 
 #include "mathematics.h"
 
+// linear interpolation
+float lerp(float a, float b, float t);
+
+// limiting value to range between minimum and maximum value
+template<typename T>
+T clamp(const T &value, const T &low, const T &high)
+{
+    return (value < low) ? low : (value > high ? high : value);
+}
+
+// polygon triangulation
 std::optional<std::vector<size_t>> triangularize(const std::vector<Vec3> &points);

@@ -4,30 +4,31 @@
 
 #include "algorithms.h"
 
+// helper functions
+
 bool is_in_triangle(const Vec3 &pt, const Vec3 &v1, const Vec3 &v2, const Vec3 &v3)
 {
-    Vec3 cross1 = Vec3::cross(v2 - v1, pt - v1);
-    Vec3 cross2 = Vec3::cross(v3 - v2, pt - v2);
-    Vec3 cross3 = Vec3::cross(v1 - v3, pt - v3);
+    const Vec3 cross1 = Vec3::cross(v2 - v1, pt - v1);
+    const Vec3 cross2 = Vec3::cross(v3 - v2, pt - v2);
+    const Vec3 cross3 = Vec3::cross(v1 - v3, pt - v3);
 
-    bool same_sign = (cross1.z >= 0 && cross2.z >= 0 && cross3.z >= 0) || (cross1.z <= 0 && cross2.z <= 0 && cross3.z <= 0);
+    const bool same_sign = (cross1.z >= 0 && cross2.z >= 0 && cross3.z >= 0) || (cross1.z <= 0 && cross2.z <= 0 && cross3.z <= 0);
     return same_sign;
 }
 
-bool is_ear(size_t i, const std::vector<Vec3> &points, const std::vector<size_t> &indices)
+bool is_ear(const size_t i, const std::vector<Vec3> &points, const std::vector<size_t> &indices)
 {
-    size_t prev = indices[(i + indices.size() - 1) % indices.size()];
-    size_t curr = indices[i];
-    size_t next = indices[(i + 1) % indices.size()];
+    const size_t prev = indices[(i + indices.size() - 1) % indices.size()];
+    const size_t curr = indices[i];
+    const size_t next = indices[(i + 1) % indices.size()];
 
     const Vec3 &v1 = points[prev];
     const Vec3 &v2 = points[curr];
     const Vec3 &v3 = points[next];
 
     // check if angle is convex
-    Vec3 d1 = v2 - v1;
-    Vec3 d2 = v3 - v2;
-    if (Vec3::cross(d1, d2).z <= 0)
+    const Vec3 d1 = v2 - v1;
+    if (const Vec3 d2 = v3 - v2; Vec3::cross(d1, d2).z <= 0)
     {
         return false; // not convex
     }
@@ -49,9 +50,16 @@ bool is_ear(size_t i, const std::vector<Vec3> &points, const std::vector<size_t>
     return true; // ear found
 }
 
+// main functions
+
+float lerp(const float a, const float b, const float t)
+{
+    return a + (b - a) * t;
+}
+
 std::optional<std::vector<size_t>> triangularize(const std::vector<Vec3> &points)
 {
-    size_t n = points.size();
+    const size_t n = points.size();
     if (n < 3)
     {
         return std::nullopt; // insufficient points
@@ -82,7 +90,7 @@ std::optional<std::vector<size_t>> triangularize(const std::vector<Vec3> &points
                 result.push_back(next);
 
                 // removing current ear
-                indices.erase(std::next(indices.begin(), i));
+                indices.erase(std::next(indices.begin(), static_cast<std::ptrdiff_t>(i)));
                 ear_found = true;
                 break;
             }

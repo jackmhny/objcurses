@@ -4,17 +4,6 @@
 
 #include "object.h"
 
-#include <filesystem>
-#include <fstream>
-#include <iostream>
-#include <sstream>
-#include <vector>
-#include <algorithm>
-#include <cctype>
-#include <cstring>
-
-#include "utils/algorithms.h"
-
 // helper functions
 
 // from obj index to vector index
@@ -88,7 +77,7 @@ bool Object::parse_vertex(const std::string &line)
 }
 
 // parse f
-bool Object::parse_face(const std::string &line, int current_material)
+bool Object::parse_face(const std::string &line, std::optional<int> current_material)
 {
     std::stringstream ss(line);
     std::vector<int> local_indices;
@@ -227,7 +216,7 @@ bool Object::load(const std::string &obj_filename, bool color_support)
 
     std::ifstream in = std::move(*file);
 
-    int current_material = -1;
+    std::optional<int> current_material = std::nullopt;
     std::string line;
 
     while (std::getline(in, line))

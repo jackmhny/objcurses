@@ -8,11 +8,33 @@
 #include <optional>
 #include <string>
 #include <vector>
+#include <filesystem>
+#include <fstream>
+#include <iostream>
+#include <sstream>
+#include <algorithm>
+#include <cctype>
+#include <cstring>
 
-#include "face.h"
-#include "material.h"
+#include "utils/algorithms.h"
 
-#include "utils/mathematics.h"
+// triangular face
+class Face {
+public:
+    std::array<unsigned int, 3> indices;    // indices of vertices
+    std::optional<int> material;            // index of material
+
+    Face(const unsigned int idx1, const unsigned int idx2, const unsigned int idx3, const std::optional<int> mat = std::nullopt) : indices{idx1, idx2, idx3}, material(mat) {}
+};
+
+// material properties
+class Material {
+public:
+    std::string material_name;      // material name
+    Vec3 diffuse;                   // diffuse color (Kd) - red, green, blue components
+
+    Material(const std::string &name, const Vec3 &color) : material_name(name), diffuse(color) {}
+};
 
 // object (3d model)
 class Object {
@@ -31,7 +53,7 @@ private:
     std::optional<int> find_material(const std::string &material_name) const;
 
     bool parse_vertex(const std::string &line);
-    bool parse_face(const std::string &line, int current_material);
+    bool parse_face(const std::string &line, std::optional<int> current_material);
     bool parse_mtl_file(const std::string &line, const std::string &obj_filename);
     int parse_material(const std::string &line) const;
     bool parse_current_material(const std::string &line, std::string &current_name, Vec3 &current_diffuse, bool &have_active_material);
