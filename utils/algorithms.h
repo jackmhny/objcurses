@@ -22,3 +22,12 @@ T clamp(const T &value, const T &low, const T &high)
 
 // polygon triangulation
 std::optional<std::vector<size_t>> triangularize(const std::vector<Vec3> &points);
+
+// transformations
+float deg2rad(float degree);
+float rad2deg(float radian);
+
+float clamp0(float value, float eps = 0.05f);
+
+float deg_norm(float degree);
+float rad_norm(float radian);

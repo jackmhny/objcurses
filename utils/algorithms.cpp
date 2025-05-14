@@ -109,3 +109,31 @@ std::optional<std::vector<size_t>> triangularize(const std::vector<Vec3> &points
 
     return result;
 }
+
+float deg2rad(float degree)
+{
+    return degree * PI / 180.f;
+}
+
+float rad2deg(float radian)
+{
+    return radian * 180.f / PI;
+}
+
+float clamp0(float value, float eps)
+{
+    return (std::fabs(value) < eps) ? 0.0f : value;
+}
+
+float deg_norm(float degree)
+{
+    degree = std::fmod(degree, 360.0f);
+    return degree < 0.0f ? degree + 360.0f : degree;
+}
+
+float rad_norm(float radian)
+{
+    radian = std::fmod(radian, 2 * PI);
+    return (radian <= -PI) ? radian + 2 * PI : (radian > PI) ? radian - 2 * PI : radian;
+}
+

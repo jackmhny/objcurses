@@ -6,6 +6,8 @@
 
 #include <cmath>
 
+#define PI 3.14159265358979323846f
+
 // 3d vector structure
 class Vec3 {
 public:
@@ -39,4 +41,7 @@ public:
 
     [[nodiscard]] static Vec3 rotate_y(const Vec3 &v, float radians); // rotate around y axis
     [[nodiscard]] static Vec3 rotate_x(const Vec3 &v, float radians); // rotate around x axis
+
+    [[nodiscard]] static Vec3 to_screen(const Vec3 &v, float zoom, float logical_x, float logical_y); // transform to viewport
+
 };

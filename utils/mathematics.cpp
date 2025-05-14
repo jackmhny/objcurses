@@ -103,3 +103,12 @@ Vec3 Vec3::rotate_x(const Vec3 &v, const float radians)
         v.y * sin_theta + v.z * cos_theta
     };
 }
+
+Vec3 Vec3::to_screen(const Vec3 &v, float zoom, float logical_x, float logical_y)
+{
+    return {
+        (v.x * zoom + 1.0f) * 0.5f * logical_x,
+        (1.0f - v.y * zoom) * 0.5f * logical_y,
+        (v.z * zoom + 1.0f) * 0.5f
+    };
+}

@@ -48,6 +48,9 @@ public:
     // load obj file with optional material mtl support
     bool load(const std::string &obj_filename, bool color_support = false);
 
+    // normalize object
+    void normalize();
+
 private:
     bool load_materials(const std::string &mtl_filename);
     std::optional<int> find_material(const std::string &material_name) const;

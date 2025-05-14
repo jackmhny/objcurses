@@ -315,3 +315,39 @@ std::optional<int> Object::find_material(const std::string &material_name) const
     const auto it = std::ranges::find_if(materials, [&material_name](const Material &m){ return m.material_name == material_name; });
     return (it != materials.end()) ? std::make_optional(std::distance(materials.begin(), it)) : std::nullopt;
 }
+
+// normalize verts of object
+void Object::normalize()
+{
+    if (vertices.empty())
+    {
+        return;
+    }
+
+    Vec3 vmin = vertices[0];
+    Vec3 vmax = vertices[0];
+
+    for (const auto &v : vertices)
+    {
+        vmin.x = std::min(vmin.x, v.x);
+        vmin.y = std::min(vmin.y, v.y);
+        vmin.z = std::min(vmin.z, v.z);
+
+        vmax.x = std::max(vmax.x, v.x);
+        vmax.y = std::max(vmax.y, v.y);
+        vmax.z = std::max(vmax.z, v.z);
+    }
+
+    const Vec3 center = (vmin + vmax) * 0.5f;
+    const float scale = 1.0f / std::max({
+        vmax.x - vmin.x,
+        vmax.y - vmin.y,
+        vmax.z - vmin.z,
+        1e-6f
+    });
+
+    for (auto &v : vertices)
+    {
+        v = (v - center) * scale;
+    }
+}
