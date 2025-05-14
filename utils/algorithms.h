@@ -2,6 +2,8 @@
  * algorithms.h
  */
 
+#pragma once
+
 #include <numeric>
 #include <optional>
 #include <vector>
