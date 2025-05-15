@@ -14,7 +14,7 @@
 
 #include "entities/geometry/object.h"
 #include "entities/rendering/buffer.h"
-#include "utils/renderer.h"
+#include "entities/rendering/renderer.h"
 #include "config.h"
 #include "version.h"
 
@@ -148,14 +148,14 @@ static Args parse_args(int argc, char **argv)
 
 // helpers
 
-void render_hud(float zoom, float az, float al)
+void render_hud(const Camera &cam)
 {
-    mvprintw(0, 0, "zoom     %6.1f x", zoom);
-    mvprintw(1, 0, "azimuth  %6.1f deg", clamp0(rad2deg(az)));
-    mvprintw(2, 0, "altitude %6.1f deg", clamp0(rad2deg(al)));
+    mvprintw(0, 0, "zoom     %6.1f x",  cam.zoom);
+    mvprintw(1, 0, "azimuth  %6.1f deg", clamp0(rad2deg(cam.azimuth)));
+    mvprintw(2, 0, "altitude %6.1f deg", clamp0(rad2deg(cam.altitude)));
 }
 
-bool handle_input(int ch, float &az, float &al, float &zoom, bool &hud)
+bool handle_input(int ch, Camera &cam, bool &hud)
 {
     switch (ch)
     {
@@ -168,26 +168,24 @@ bool handle_input(int ch, float &az, float &al, float &zoom, bool &hud)
 
         // keys / vim / wasd
         case KEY_LEFT: case 'h': case 'H': case 'a' : case 'A':     // left rotation
-            az += deg2rad(ANGLE_STEP);
-            az = rad_norm(az);
+            cam.rotate_left();
             break;
         case KEY_RIGHT: case 'l': case 'L': case 'd': case 'D':     // right rotation
-            az -= deg2rad(ANGLE_STEP);
-            az = rad_norm(az);
+            cam.rotate_right();
             break;
         case KEY_UP: case 'k': case 'K': case 'w': case 'W':                // up rotation
-            al = std::min(al + deg2rad(ANGLE_STEP), PI/2);
+            cam.rotate_up();
             break;
         case KEY_DOWN: case 'j': case 'J': case 's': case 'S':              // down rotation
-            al = std::max(al - deg2rad(ANGLE_STEP), -PI/2);
+            cam.rotate_down();
             break;
 
         // +- / io
         case '+': case '=': case 'i': case 'I':                 // zoom in
-            zoom = std::min(zoom + ZOOM_STEP, ZOOM_MAX);
+            cam.zoom_in();
             break;
         case '-': case 'o': case 'O':                           // zoom out
-            zoom = std::max(zoom - ZOOM_STEP, ZOOM_MIN);
+            cam.zoom_out();
             break;
     }
 
@@ -227,10 +225,9 @@ int main(int argc, char **argv)
 
     Buffer buf(static_cast<unsigned int>(cols), static_cast<unsigned int>(rows), logical_x, logical_y);
 
-    // interactive parameters
-    float azimuth = 0.0f;
-    float altitude = 0.0f;
-    float zoom = std::clamp(1.0f, ZOOM_MIN, ZOOM_MAX);
+    // view
+    Camera cam;         // default
+    Light light;        // default
     bool hud = false;
 
     // main render loop
@@ -240,7 +237,7 @@ int main(int argc, char **argv)
         buf.clear();
 
         // render model
-        render_object(buf, obj, azimuth, altitude, zoom, args.static_light, args.color_support);
+        Renderer::render(buf, obj, cam, light, args.static_light, args.color_support);
 
         move(0, 0);
         buf.printw();
@@ -248,7 +245,7 @@ int main(int argc, char **argv)
         // render hud
         if (hud)
         {
-            render_hud(zoom, azimuth, altitude);
+            render_hud(cam);
         }
 
         // draw buffer
@@ -264,7 +261,7 @@ int main(int argc, char **argv)
             buf = Buffer(static_cast<unsigned int>(cols), static_cast<unsigned int>(rows), lx, logical_y);
         }
 
-        if (!handle_input(ch, azimuth, altitude, zoom, hud))
+        if (!handle_input(ch, cam, hud))
         {
             break;
         }

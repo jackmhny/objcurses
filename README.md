@@ -17,10 +17,10 @@
 # Features
 
 - Render `.obj` files directly in terminal
-- Real-time camera controls and light simulation
-- Basic color and lighting support from `.mtl` files
+- Real-time camera and directional light control
+- Basic color support from `.mtl` material files
 - HUD overlay for additional stats
-- Minimal dependencies: C/C++, `ncurses`, `<cmath>`
+- Minimal dependencies: C/C++, `ncurses`, math
 
 # Usage
 

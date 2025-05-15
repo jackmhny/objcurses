@@ -4,22 +4,19 @@
 
 #include "renderer.h"
 
-// returns luminance character based on angle between normal and light
-char luminance_char(const Vec3 &normal, const Vec3 &light, const std::string &scale = CHARS_LUM)
+char Renderer::luminance_char(const Vec3 &normal, const Vec3 &light, const std::string &scale)
 {
     const float sim = (Vec3::cosine_similarity(normal, light) + 1.0f) * 0.5f;
     const int idx = std::clamp(static_cast<int>(std::round(sim * static_cast<float>(scale.size() - 1))), 0, static_cast<int>(scale.size() - 1));
     return scale[idx];
 }
 
-void render_object(Buffer &buf, const Object &obj, float azimuth, float altitude, float zoom, bool static_light, bool color_support)
+void Renderer::render(Buffer &buf, const Object &obj, const Camera &cam, const Light  &light, bool static_light, bool color_support)
 {
-    const float az_cos = std::cos(azimuth);
-    const float az_sin = std::sin(azimuth);
-    const float al_cos = std::cos(altitude);
-    const float al_sin = std::sin(altitude);
-
-    const Vec3 light_dir = Vec3(0.75f, -1.0f, -0.5f).normalize();
+    const float az_cos = std::cos(cam.azimuth);
+    const float az_sin = std::sin(cam.azimuth);
+    const float al_cos = std::cos(cam.altitude);
+    const float al_sin = std::sin(cam.altitude);
 
     for (const auto &face : obj.faces)
     {
@@ -45,14 +42,14 @@ void render_object(Buffer &buf, const Object &obj, float azimuth, float altitude
         const float lx = buf.logical_x;
         const float ly = buf.logical_y;
 
-        Vec3 s1 = Vec3::to_screen(rv1, zoom, lx, ly);
-        Vec3 s2 = Vec3::to_screen(rv2, zoom, lx, ly);
-        Vec3 s3 = Vec3::to_screen(rv3, zoom, lx, ly);
+        Vec3 s1 = Vec3::to_screen(rv1, cam.zoom, lx, ly);
+        Vec3 s2 = Vec3::to_screen(rv2, cam.zoom, lx, ly);
+        Vec3 s3 = Vec3::to_screen(rv3, cam.zoom, lx, ly);
 
         // shading
         const Vec3 normal = -Vec3::cross(rv2 - rv1, rv3 - rv1).normalize();
         const Vec3 n_for_light = static_light ? -Vec3::cross(v2 - v1, v3 - v1).normalize() : normal;
-        const char lum = luminance_char(n_for_light, light_dir, CHARS_LUM);
+        const char lum = luminance_char(n_for_light, light.direction, CHARS_LUM);
 
         buf.draw_projection(Projection(s1, s2, s3, lum), lum, (color_support && face.material.has_value()) ? face.material.value() : -1);
     }
