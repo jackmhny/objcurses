@@ -73,11 +73,6 @@ cmake ..
 make
 ```
 
-# Sample Models
-
-- The [Fox and Shiba Inu Models (PixelMannen)](https://opengameart.org/content/fox-and-shiba) were used throughout development for testing `.obj` and `.mtl` parsing and rendering. The files `fox.obj` and `fox.mtl` are located in `/resources/objects/`, and the same model was featured in the recorded demo footage.
-- The [Low Poly Tree(kiprus)](https://free3d.com/3d-model/low_poly_tree-816203.html) played a key role in identifying a flaw in the triangulation algorithm, as it contains complex non-convex polygons that exposed edge cases in ear clipping algorithm.
-
 # References
 
 ## Inspirations
@@ -101,3 +96,11 @@ make
 
 * [OBJ Parsing (Stack Overflow)](https://stackoverflow.com/questions/52824956/how-can-i-parse-a-simple-obj-file-into-triangles)
   Clarified parsing of `.obj` files and preparing vertex data.
+
+## Sample Models
+
+* [Fox Model (PixelMannen)](https://opengameart.org/content/fox-and-shiba) was used throughout development for testing `.obj` and `.mtl` parsing and rendering. The files `fox.obj` and `fox.mtl` are located in `/resources/objects/`, and the same model was featured in the recorded demo footage.
+
+* [Low Poly Tree (kiprus)](https://free3d.com/3d-model/low_poly_tree-816203.html) played a key role in identifying a flaw in the triangulation algorithm, as it contains complex non-convex polygons that exposed edge cases in ear clipping algorithm.
+
+* [Linux Mascot (Vido89)](https://blendswap.com/blend/23774) model help in fixing triangulation logic by triggering false degenerate cases due to its irregular normals and detailed geometry.

@@ -70,7 +70,7 @@ std::optional<std::vector<size_t>> triangularize(const std::vector<Vec3> &points
 
     const Vec3 normal = Vec3::normal(points);
 
-    if (normal.magnitude() < 1e-6f)
+    if (normal.magnitude() < 1e-12f)
     {
         return std::nullopt; // degenerate polygon
     }
