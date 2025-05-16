@@ -6,17 +6,18 @@
 
 // helper functions
 
-bool is_in_triangle(const Vec3 &pt, const Vec3 &v1, const Vec3 &v2, const Vec3 &v3)
+static bool is_in_triangle(const Vec3 &pt, const Vec3 &v1, const Vec3 &v2, const Vec3 &v3, const Vec3 &normal)
 {
-    const Vec3 cross1 = Vec3::cross(v2 - v1, pt - v1);
-    const Vec3 cross2 = Vec3::cross(v3 - v2, pt - v2);
-    const Vec3 cross3 = Vec3::cross(v1 - v3, pt - v3);
+    const float s1 = Vec3::dot(Vec3::cross(v2 - v1, pt - v1), normal);
+    const float s2 = Vec3::dot(Vec3::cross(v3 - v2, pt - v2), normal);
+    const float s3 = Vec3::dot(Vec3::cross(v1 - v3, pt - v3), normal);
 
-    const bool same_sign = (cross1.z >= 0 && cross2.z >= 0 && cross3.z >= 0) || (cross1.z <= 0 && cross2.z <= 0 && cross3.z <= 0);
+    const bool same_sign = (s1 >= 0 && s2 >= 0 && s3 >= 0) || (s1 <= 0 && s2 <= 0 && s3 <= 0);
+
     return same_sign;
 }
 
-bool is_ear(const size_t i, const std::vector<Vec3> &points, const std::vector<size_t> &indices)
+static bool is_ear(const size_t i, const std::vector<Vec3> &points, const std::vector<size_t> &indices, const Vec3 &normal)
 {
     const size_t prev = indices[(i + indices.size() - 1) % indices.size()];
     const size_t curr = indices[i];
@@ -28,7 +29,9 @@ bool is_ear(const size_t i, const std::vector<Vec3> &points, const std::vector<s
 
     // check if angle is convex
     const Vec3 d1 = v2 - v1;
-    if (const Vec3 d2 = v3 - v2; Vec3::cross(d1, d2).z <= 0)
+    const Vec3 d2 = v3 - v2;
+
+    if (Vec3::dot(Vec3::cross(d1, d2), normal) <= 0.0f)
     {
         return false; // not convex
     }
@@ -41,7 +44,7 @@ bool is_ear(const size_t i, const std::vector<Vec3> &points, const std::vector<s
             continue;
         }
 
-        if (is_in_triangle(points[indices[j]], v1, v2, v3))
+        if (is_in_triangle(points[indices[j]], v1, v2, v3, normal))
         {
             return false; // point inside triangle
         }
@@ -65,6 +68,13 @@ std::optional<std::vector<size_t>> triangularize(const std::vector<Vec3> &points
         return std::nullopt; // insufficient points
     }
 
+    const Vec3 normal = Vec3::normal(points);
+
+    if (normal.magnitude() < 1e-6f)
+    {
+        return std::nullopt; // degenerate polygon
+    }
+
     // list of vertex indexes
     std::vector<size_t> indices(n);
     std::iota(indices.begin(), indices.end(), 0);
@@ -78,7 +88,7 @@ std::optional<std::vector<size_t>> triangularize(const std::vector<Vec3> &points
 
         for (std::size_t i = 0; i < indices.size(); i++)
         {
-            if (is_ear(i, points, indices))
+            if (is_ear(i, points, indices, normal))
             {
                 // adding triangle
                 size_t prev = indices[(i + indices.size() - 1) % indices.size()];
@@ -136,4 +146,3 @@ float rad_norm(float radian)
     radian = std::fmod(radian, 2 * PI);
     return (radian <= -PI) ? radian + 2 * PI : (radian > PI) ? radian - 2 * PI : radian;
 }
-

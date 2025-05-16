@@ -104,6 +104,24 @@ Vec3 Vec3::rotate_x(const Vec3 &v, const float radians)
     };
 }
 
+Vec3 Vec3::normal(const std::vector<Vec3> &polygon)
+{
+    Vec3 n(0.0f, 0.0f, 0.0f);
+
+    for (size_t i = 0; i < polygon.size(); i++)
+    {
+        const Vec3& a = polygon[i];
+        const Vec3& b = polygon[(i + 1) % polygon.size()];
+
+        n.x += (a.y - b.y) * (a.z + b.z);
+        n.y += (a.z - b.z) * (a.x + b.x);
+        n.z += (a.x - b.x) * (a.y + b.y);
+    }
+
+    return n;
+}
+
+
 Vec3 Vec3::to_screen(const Vec3 &v, float zoom, float logical_x, float logical_y)
 {
     return {

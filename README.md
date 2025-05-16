@@ -73,9 +73,10 @@ cmake ..
 make
 ```
 
-# Sample Model
+# Sample Models
 
-The [Fox and Shiba Inu Models (PixelMannen)](https://opengameart.org/content/fox-and-shiba) were used throughout development for testing `.obj` and `.mtl` parsing and rendering. The files `fox.obj` and `fox.mtl` are located in `/resources/objects/`, and the same model was featured in the recorded demo footage.
+- The [Fox and Shiba Inu Models (PixelMannen)](https://opengameart.org/content/fox-and-shiba) were used throughout development for testing `.obj` and `.mtl` parsing and rendering. The files `fox.obj` and `fox.mtl` are located in `/resources/objects/`, and the same model was featured in the recorded demo footage.
+- The [Low Poly Tree(kiprus)](https://free3d.com/3d-model/low_poly_tree-816203.html) played a key role in identifying a flaw in the triangulation algorithm, as it contains complex non-convex polygons that exposed edge cases in ear clipping algorithm.
 
 # References
 

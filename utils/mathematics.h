@@ -5,6 +5,7 @@
 #pragma once
 
 #include <cmath>
+#include <vector>
 
 #define PI 3.14159265358979323846f
 
@@ -42,6 +43,8 @@ public:
     [[nodiscard]] static Vec3 rotate_y(const Vec3 &v, float radians); // rotate around y axis
     [[nodiscard]] static Vec3 rotate_x(const Vec3 &v, float radians); // rotate around x axis
 
-    [[nodiscard]] static Vec3 to_screen(const Vec3 &v, float zoom, float logical_x, float logical_y); // transform to viewport
+    [[nodiscard]] static Vec3 normal(const std::vector<Vec3> &polygon);     // normal to polygon
+
+    [[nodiscard]] static Vec3 to_screen(const Vec3 &v, float zoom, float logical_x, float logical_y);   // transform to viewport
 
 };
