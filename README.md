@@ -8,7 +8,7 @@
            \/\______|    \/                  \/     \/     \/ 
 ```
 
-**objcurses** is a minimalistic 3D object viewer that runs in your terminal using `ncurses`. It renders `.obj` models in real time using ASCII characters and a simple rendering pipeline. The project was built from scratch in modern C++20 using up-to-date best practices and a clean modular design, as a personal exploration of low-level graphics programming - without relying on external graphic engines or libraries.
+**objcurses** is a minimalistic 3D object viewer that runs in your terminal using `ncurses`. It renders `.obj` models in real time using ASCII characters and a simple rendering pipeline. The project was built from scratch in modern C++20 using up-to-date best practices and a clean modular design, as a personal exploration of low-level graphics programming - without relying on external graphic engines or frameworks.
 
 <p align="center">
   <img src="resources/images/demo.gif" alt="TUI Demo Gif" width="600">
@@ -21,6 +21,13 @@
 - Basic color support from `.mtl` material files
 - HUD overlay for additional stats
 - Minimal dependencies: C/C++, `ncurses`, math
+
+# Use Cases
+
+* Preview 3D files instantly without launching heavy editors
+* Generate custom ASCII art for neofetch or terminal splash
+* Style CLI tools or games with ASCII-based intros and visuals
+
 
 # Usage
 
