@@ -24,7 +24,7 @@ static std::optional<int> safe_stoi(const std::string &token)
 // from obj index to vector index
 static int relative_index(const int idx, int total_vertices)
 {
-    if (idx == 0 || std::abs(idx) > total_vertices)
+    if (idx == 0 || idx < -total_vertices || idx > total_vertices)
     {
         std::cerr << "warning: invalid vertex index " << idx << std::endl;
         return -1;
