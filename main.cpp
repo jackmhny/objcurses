@@ -18,6 +18,13 @@
 #include "config.h"
 #include "version.h"
 
+#ifdef ASAN_OPTIONS
+extern "C" const char *__asan_default_options() {
+    return ASAN_OPTIONS;
+}
+#endif
+
+
 // ncurses
 
 void init_ncurses()
