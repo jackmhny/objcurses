@@ -68,17 +68,84 @@ Tab                Toggle HUD
 q                  Quit
 ```
 
-# Build
+# Installation
 
-CMake setup is already configured - just clone and build:
+Latest release available [here](https://github.com/admtrv/objcurses/releases). Replace `<version>` with the actual release version, e.g. `1.2.3`.
+
+## Manual (build from source)
+
+To manually compile and install `objcurses`, follow these steps:
+
+### Install Dependencies
+
+Make sure you have CMake and a C++ compiler installed:
+
+```bash
+sudo apt update
+sudo apt install cmake g++ libncurses6 libtinfo6 -y
+```
+
+### Clone the Repository
 
 ```bash
 git clone https://github.com/admtrv/objcurses
 cd objcurses
-mkdir build && cd build
+```
+
+### Compile the Program
+
+```bash
+mkdir cmake-build-release
+cd cmake-build-release
 cmake ..
 make
 ```
+
+### Install for Global Use (optional)
+
+```bash
+sudo make install
+```
+
+---
+
+## From `.tar.gz`
+
+To install `objcurses` from the binary archive:
+
+```bash
+tar -xzvf objcurses-<version>-linux.tar.gz
+cd objcurses-<version>-linux
+sudo mv objcurses /usr/local/bin/
+sudo chmod +x /usr/local/bin/objcurses
+```
+
+---
+
+## From `.deb`
+
+For Debian-based distributions (Ubuntu, Mint, etc.), use:
+
+```bash
+sudo dpkg -i objcurses-<version>-linux.deb
+```
+
+To uninstall:
+
+```bash
+sudo dpkg -r objcurses
+```
+
+---
+
+## Verify Installation
+
+```bash
+which objcurses
+objcurses --help
+```
+
+You should now be able to use `objcurses` from anywhere in your terminal.
 
 # References
 
