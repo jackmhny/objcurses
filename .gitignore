@@ -3,5 +3,8 @@
 /cmake-build-release/
 /cmake-build-sanitize/
 
+# release directory
+/package/
+
 # ide settings
 /.idea
