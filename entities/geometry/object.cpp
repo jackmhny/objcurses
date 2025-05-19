@@ -6,18 +6,32 @@
 
 // helper functions
 
+// safe from string to int
+static std::optional<int> safe_stoi(const std::string &token)
+{
+    try {
+        size_t pos = 0;
+        int v = std::stoi(token, &pos, 10);
+        if (pos != token.size())
+            return std::nullopt;
+        return v;
+    }
+    catch (const std::exception &) {
+        return std::nullopt;
+    }
+}
+
 // from obj index to vector index
 static int relative_index(const int idx, int total_vertices)
 {
     if (idx == 0 || std::abs(idx) > total_vertices)
     {
         std::cerr << "warning: invalid vertex index " << idx << std::endl;
-        return 0;
+        return -1;
     }
 
     return idx < 0 ? total_vertices + idx : idx - 1;
 }
-
 
 // clean string
 static void strip_line(std::string &line)
@@ -26,28 +40,10 @@ static void strip_line(std::string &line)
     std::ranges::replace(line, '\t', ' ');
 }
 
-// check and open file
-static std::optional<std::ifstream> open_file(const std::string &filename, const std::string &check_extension)
+// check open file
+static std::optional<std::ifstream> open_file(const std::string &filename)
 {
-    // check filename
-    std::filesystem::path path(filename);
-    if (!exists(path))
-    {
-        std::cerr << "error: can't find file " << filename << std::endl;
-        return std::nullopt;
-    }
-
-    // check extension
-    auto extension = path.extension().string();
-    std::ranges::transform(extension, extension.begin(), tolower);
-    if (extension != check_extension)
-    {
-        std::cerr << "error: unknown file extension " << extension << std::endl;
-        return std::nullopt;
-    }
-
-    // open file
-    std::ifstream in(filename);
+    std::ifstream in(filename, std::ios::in | std::ios::binary);
     if (!in.is_open())
     {
         std::cerr << "error: can't open file " << filename << std::endl;
@@ -58,6 +54,30 @@ static std::optional<std::ifstream> open_file(const std::string &filename, const
 }
 
 // parse functions
+
+bool Object::validate() const
+{
+    if (vertices.empty() || faces.empty())
+    {
+        std::cerr << "error: invalid object" << std::endl;
+        return false;
+    }
+
+    size_t n = vertices.size();
+    for (const auto &f : faces)
+    {
+        for (auto idx : f.indices)
+        {
+            if (idx >= n)
+            {
+                std::cerr << "error: invalid object" << std::endl;
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
 
 // parse v x y z
 bool Object::parse_vertex(const std::string &line)
@@ -71,7 +91,6 @@ bool Object::parse_vertex(const std::string &line)
         return false;
     }
 
-    // adding vertices
     vertices.emplace_back(x, y, z);
     return true;
 }
@@ -80,24 +99,30 @@ bool Object::parse_vertex(const std::string &line)
 bool Object::parse_face(const std::string &line, std::optional<int> current_material)
 {
     std::stringstream ss(line);
-    std::vector<int> local_indices;
+    std::vector<unsigned int> local_indices;
 
-    // parsing indexes
-    while (!ss.eof())
+    std::string token;
+    while (ss >> token)
     {
-        std::string token;
-        ss >> token;
-        if (token.empty())
-            break;
-
-        // first /
         if (const auto slash_pos = token.find('/'); slash_pos != std::string::npos)
         {
-            token = token.substr(0, slash_pos);
+            token.erase(slash_pos); // keep only first index
         }
 
-        // number
-        local_indices.push_back(relative_index(std::stoi(token), static_cast<int>(vertices.size())));
+        auto maybe_idx = safe_stoi(token);
+        if (!maybe_idx)
+        {
+            std::cerr << "warning: invalid face token " << token << std::endl;
+            return false;
+        }
+
+        int ridx = relative_index(*maybe_idx, static_cast<int>(vertices.size()));
+        if (ridx < 0 || static_cast<size_t>(ridx) >= vertices.size())
+        {
+            std::cerr << "warning: vertex index " << *maybe_idx << " out of range" << std::endl;
+            return false;
+        }
+        local_indices.push_back(static_cast<unsigned int>(ridx));
     }
 
     if (local_indices.size() < 3)
@@ -161,14 +186,14 @@ bool Object::parse_mtl_file(const std::string &line, const std::string &obj_file
 }
 
 // parse usemtl
-int Object::parse_material(const std::string &line) const
+std::optional<int> Object::parse_material(const std::string &line) const
 {
     std::stringstream ss(line);
 
     std::string material_name;
     ss >> material_name;
-    const auto found = find_material(material_name);
-    return found.has_value() ? found.value() : -1;
+
+    return find_material(material_name);
 }
 
 // parse newmtl
@@ -208,8 +233,8 @@ bool Object::parse_diffuse_color(const std::string &line, Vec3 &current_diffuse)
 // methods
 bool Object::load(const std::string &obj_filename, bool color_support)
 {
-    auto file = open_file(obj_filename, ".obj");
-    if (!file.has_value())
+    auto file = open_file(obj_filename);
+    if (!file)
     {
         return false;
     }
@@ -224,7 +249,9 @@ bool Object::load(const std::string &obj_filename, bool color_support)
         strip_line(line);
 
         if (line.empty() || line[0] == '#') // comment
+        {
             continue;
+        }
 
         std::stringstream ss(line);
         std::string cmd;
@@ -236,32 +263,44 @@ bool Object::load(const std::string &obj_filename, bool color_support)
             arguments.erase(0, 1);
         }
 
+        bool ok = true;
+
         if (cmd == "v") // vertex
         {
-            parse_vertex(arguments);
+            ok = parse_vertex(arguments);
         }
         else if (cmd == "f") // face
         {
-            parse_face(arguments, current_material);
+            ok = parse_face(arguments, current_material);
         }
         else if (color_support && cmd == "mtllib")  // material file
         {
-            parse_mtl_file(arguments, obj_filename);
+            ok = parse_mtl_file(arguments, obj_filename);
         }
         else if (color_support && cmd == "usemtl")  // material
         {
             current_material = parse_material(arguments);
+
+            if (!current_material)
+            {
+                std::cerr << "warning: unknown material " << arguments << std::endl;
+            }
         }
         // ignoring anything else
+
+        if (!ok)
+        {
+            return false;
+        }
     }
 
     in.close();
-    return true;
+    return validate();
 }
 
 bool Object::load_materials(const std::string &mtl_filename)
 {
-    auto file = open_file(mtl_filename, ".mtl");
+    auto file = open_file(mtl_filename);
     if (!file.has_value())
     {
         return false;

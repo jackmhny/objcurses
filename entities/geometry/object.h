@@ -52,13 +52,19 @@ public:
     void normalize();
 
 private:
+    // material related methods
     bool load_materials(const std::string &mtl_filename);
     std::optional<int> find_material(const std::string &material_name) const;
 
+    // composite methods of parser
     bool parse_vertex(const std::string &line);
     bool parse_face(const std::string &line, std::optional<int> current_material);
     bool parse_mtl_file(const std::string &line, const std::string &obj_filename);
-    int parse_material(const std::string &line) const;
+    std::optional<int> parse_material(const std::string &line) const;
     bool parse_current_material(const std::string &line, std::string &current_name, Vec3 &current_diffuse, bool &have_active_material);
     static bool parse_diffuse_color(const std::string &line, Vec3 &current_diffuse);
+
+    // validation of object after parsing
+    bool validate() const;
+
 };
