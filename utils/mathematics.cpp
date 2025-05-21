@@ -121,12 +121,12 @@ Vec3 Vec3::normal(const std::vector<Vec3> &polygon)
     return n;
 }
 
-
 Vec3 Vec3::to_screen(const Vec3 &v, float zoom, float logical_x, float logical_y)
 {
     return {
-        (v.x * zoom + 1.0f) * 0.5f * logical_x,
-        (1.0f - v.y * zoom) * 0.5f * logical_y,
+        0.5f * logical_x + 0.5f * v.x * zoom,
+        0.5f * logical_y - 0.5f * v.y * zoom,
         (v.z * zoom + 1.0f) * 0.5f
     };
 }
+
