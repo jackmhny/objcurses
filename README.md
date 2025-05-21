@@ -54,6 +54,7 @@ Examples:
 objcurses file.obj          # basic
 objcurses -c file.obj       # enable colors
 objcurses --light file.obj  # disable light rotation
+objcurses -c -l -z file.obj # flip z axis if blender model 
 
 ```
 
@@ -182,3 +183,5 @@ You should now be able to use `objcurses` from anywhere in your terminal.
 * [Low Poly Tree (kiprus)](https://free3d.com/3d-model/low_poly_tree-816203.html) played a key role in identifying a flaw in the triangulation algorithm, as it contains complex non-convex polygons that exposed edge cases in ear clipping algorithm.
 
 * [Linux Mascot (Vido89)](https://blendswap.com/blend/23774) model help in fixing triangulation logic by triggering false degenerate cases due to its irregular normals and detailed geometry.
+
+* [PlayStation Logo (Jay6T4)](https://www.models-resource.com/playstation/systembios/model/33332/) revealed a bug in the projection-to-viewport logic and showed the need for Z-axis inversion. This led to implementing axis inversion options to handle incorrectly exported Blender models.
