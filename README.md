@@ -180,8 +180,28 @@ You should now be able to use `objcurses` from anywhere in your terminal.
 
 * [Fox Model (PixelMannen)](https://opengameart.org/content/fox-and-shiba) was used throughout development for testing `.obj` and `.mtl` parsing and rendering. The files `fox.obj` and `fox.mtl` are located in `/resources/objects/`, and the same model was featured in the recorded demo footage.
 
+  <p>
+    <img src="resources/images/fox-1.png" width="45%" />
+    <img src="resources/images/fox-2.png" width="45%" />
+  </p>
+
 * [Low Poly Tree (kiprus)](https://free3d.com/3d-model/low_poly_tree-816203.html) played a key role in identifying a flaw in the triangulation algorithm, as it contains complex non-convex polygons that exposed edge cases in ear clipping algorithm.
+
+  <p>
+    <img src="resources/images/tree-1.png" width="45%" />
+    <img src="resources/images/tree-2.png" width="45%" />
+  </p>
 
 * [Linux Mascot (Vido89)](https://blendswap.com/blend/23774) model help in fixing triangulation logic by triggering false degenerate cases due to its irregular normals and detailed geometry.
 
+  <p>
+    <img src="resources/images/linux-1.png" width="45%" />
+    <img src="resources/images/linux-2.png" width="45%" />
+  </p>
+
 * [PlayStation Logo (Jay6T4)](https://www.models-resource.com/playstation/systembios/model/33332/) revealed a bug in the projection-to-viewport logic and showed the need for Z-axis inversion. This led to implementing axis inversion options to handle incorrectly exported Blender models.
+
+  <p>
+    <img src="resources/images/pslogo-1.png" width="45%" />
+    <img src="resources/images/pslogo-2.png" width="45%" />
+  </p>
