@@ -48,8 +48,13 @@ public:
     // load obj file with optional material mtl support
     bool load(const std::string &obj_filename, bool color_support = false);
 
-    // normalize object
-    void normalize();
+
+    void normalize();   // normalize object
+    void flip_faces();  // flip faces winding order
+
+    void invert_x();    // invert axes
+    void invert_y();
+    void invert_z();
 
 private:
     // material related methods

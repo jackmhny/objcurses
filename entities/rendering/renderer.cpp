@@ -38,6 +38,13 @@ void Renderer::render(Buffer &buf, const Object &obj, const Camera &cam, const L
         Vec3 rv2 = rot_x(rot_y(v2));
         Vec3 rv3 = rot_x(rot_y(v3));
 
+        // back-face culling
+        Vec3 normal_cam = Vec3::cross(rv2 - rv1, rv3 - rv1).normalize();
+        if (normal_cam.z >= 0.0f)
+            continue;
+
+        const Vec3 normal_view = -normal_cam;
+
         // screen space
         const float lx = buf.logical_x;
         const float ly = buf.logical_y;
@@ -47,10 +54,9 @@ void Renderer::render(Buffer &buf, const Object &obj, const Camera &cam, const L
         Vec3 s3 = Vec3::to_screen(rv3, cam.zoom, lx, ly);
 
         // shading
-        const Vec3 normal = -Vec3::cross(rv2 - rv1, rv3 - rv1).normalize();
-        const Vec3 n_for_light = static_light ? -Vec3::cross(v2 - v1, v3 - v1).normalize() : normal;
-        const char lum = luminance_char(n_for_light, light.direction, CHARS_LUM);
+        const Vec3 n_light = static_light ? Vec3::cross(v2 - v1, v3 - v1).normalize() : normal_view;
+        const char lum = luminance_char(n_light, light.direction, CHARS_LUM);
 
-        buf.draw_projection(Projection(s1, s2, s3, lum), lum, (color_support && face.material.has_value()) ? face.material.value() : -1);
+        buf.draw_projection(Projection(s1, s2, s3, lum), lum, (color_support && face.material) ? *face.material : -1);
     }
 }

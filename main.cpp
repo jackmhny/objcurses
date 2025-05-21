@@ -69,6 +69,10 @@ static void print_help()
         "Options:\n"
         "  -c, --color          Enable colors from .mtl file\n"
         "  -l, --light          Disable light rotation\n"
+        "  -f, --flip           Flip faces winding order\n"
+        "  -x, --invert-x       Flip geometry along X axis\n"
+        "  -y, --invert-y       Flip geometry along Y axis\n"
+        "  -z, --invert-z       Flip geometry along Z axis\n"
         "  -h, --help           Print help\n"
         "  -v, --version        Print version\n"
         "\n"
@@ -90,8 +94,12 @@ static void print_version()
 
 struct Args {
     std::filesystem::path input_file;
-    bool  color_support = false;    // -c / --color
-    bool  static_light = false;     // -l / --light
+    bool color_support = false;     // -c / --color
+    bool static_light = false;      // -l / --light
+    bool flip_faces = false;        // -f / --flip
+    bool invert_x = false;          // -x / --invert-x
+    bool invert_y = false;          // -y / --invert-y
+    bool invert_z = false;          // -z / --invert-z
 };
 
 static Args parse_args(int argc, char **argv)
@@ -123,6 +131,22 @@ static Args parse_args(int argc, char **argv)
         else if (arg == "-l" || arg == "--light")
         {
             a.static_light = true;
+        }
+        else if (arg == "-f" || arg == "--flip")
+        {
+            a.flip_faces = true;
+        }
+        else if (arg == "-x" || arg == "--invert-x")
+        {
+            a.invert_x = true;
+        }
+        else if (arg == "-y" || arg == "--invert-y")
+        {
+            a.invert_y = true;
+        }
+        else if (arg == "-z" || arg == "--invert-z")
+        {
+            a.invert_z = true;
         }
         else if (arg[0] != '-')
         {
@@ -213,6 +237,20 @@ int main(int argc, char **argv)
 
     // normalize to unit cube
     obj.normalize();
+
+    // flip faces winding order
+    if (args.flip_faces)
+        obj.flip_faces();
+
+    // invert along axes
+    if (args.invert_x)
+        obj.invert_x();
+
+    if (args.invert_y)
+        obj.invert_y();
+
+    if (args.invert_z)
+        obj.invert_z();
 
     // init curses
     init_ncurses();

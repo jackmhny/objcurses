@@ -390,3 +390,42 @@ void Object::normalize()
         v = (v - center) * scale;
     }
 }
+
+void Object::flip_faces()
+{
+    for (auto &f : faces)
+    {
+        std::swap(f.indices[1], f.indices[2]);
+    }
+}
+
+void Object::invert_x()
+{
+    for (auto &v : vertices)
+    {
+        v.x = -v.x;
+    }
+
+    flip_faces();
+}
+
+void Object::invert_y()
+{
+    for (auto &v : vertices)
+    {
+        v.y = -v.y;
+    }
+
+    flip_faces();
+}
+
+
+void Object::invert_z()
+{
+    for (auto &v : vertices)
+    {
+        v.z = -v.z;
+    }
+
+    flip_faces();
+}
