@@ -6,7 +6,7 @@
 
 // cli draw
 inline constexpr char CHARS_LUM[] = " .:-=+*#%@";
-inline constexpr float CHAR_ASPECT_RATIO = 1.8f;
+inline constexpr float CHAR_ASPECT_RATIO = 2.0f;
 
 // view
 inline constexpr float ANGLE_STEP = 5.0f;
